@@ -1,0 +1,36 @@
+<h1>All Rooms</h1>
+<p id="user-count">Users connected: 0</p>
+<div id="current-user-id" data-current-user-id="<%= current_user.id %>"></div>
+<div>
+  <% @rooms = Room.all %>
+  <% @rooms.each do |room| %>
+    <%= button_to room.name, room_path(room), method: :get %>
+  <% end %>
+</div>
+
+<%= form_for @room, remote: true, html: { id: 'myRoom' } do |f| %>
+  <%= f.text_field :name, id: 'room-id' %>
+  <%= f.hidden_field :user_id, value: current_user.id %>
+  <%= f.submit "create" %>
+<% end %>
+
+<button id="sendNotificationLink">send Notification</button>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+  document.body.addEventListener('click', function(event) {
+    if (event.target && event.target.id === 'sendNotificationLink') {
+      if (Notification.permission === 'granted') {
+        console.log("clicked")
+        var title = 'Push Notification'
+        var body = 'triggered by link'
+        var options = { body: body }
+      
+        not = new Notification(title, options)
+        console.log(not)
+      }
+    }
+  });
+});
+
+</script>

@@ -1,0 +1,42 @@
+<h1><%= @room.name %></h1>
+<div id="room-id" data-room-id="<%= @room.try(:id) %>"></div>
+
+<%= button_to "Exit Room", rooms_path, method: :get, id: "leave-room-button" %>
+
+<% if current_user.id == @room.user_id %>
+  <% button_to "delete room", room_path(@room), method: :destroy %>
+<% end %>
+
+<div>
+  <% @room.users.uniq.each do |user|%>
+    <strong><%= user.username %><div class="dot user-status-<%= user.id %>  <%= user.is_online? ? 'online' : 'offline' %>"></div></strong>
+  <% end %>
+</div>
+
+<div id="message_holder" class="message_container">
+  <% @room.messages.each do |msg| %>
+    <p>
+      <span class="small-margin"><%= msg.user.username %>-</span><strong><%= msg.content %></strong>
+    </p>
+  <% end %>
+</div>
+
+<%= form_for @message, remote: true, html: { id: 'myForm' } do |f| %>
+  <%= f.text_field :content, id: 'input-field' %>
+  <%= f.hidden_field :user_id, value: current_user.id%>
+  <%= f.hidden_field :room_id, value: params[:id]%>
+  <%= f.submit "send"%>
+<% end %>
+
+<script>
+  $(document).ready(function() {
+  // Scroll to the bottom on page load
+    scrollToBottom();
+
+    // Define the scrollToBottom function
+    function scrollToBottom() {
+      var messageHolder = $('#message_holder');
+      messageHolder.scrollTop(messageHolder[0].scrollHeight);
+    }
+  });
+</script>
